@@ -19,7 +19,6 @@ export default function RegisterPage() {
     e.preventDefault();
     setError('');
 
-    // Validation
     if (!name || !email || !password || !confirmPassword) {
       setError('All fields are required');
       return;
