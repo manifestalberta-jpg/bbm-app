@@ -1,0 +1,217 @@
+// Big Brain Moves — Prisma + SQLite
+// Local database, zero external dependencies
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  password  String     // bcrypt hashed
+  name      String?
+  
+  // Newsletter preferences
+  topics    String     @default("[]") // JSON stringified array
+  timezone  String     @default("UTC")
+  emailTime String     @default("08:00") // 24-hour format
+  
+  // Email delivery
+  dailyDeliveryEnabled Boolean @default(true)
+  unsubscribedAt DateTime?
+  
+  // Subscription
+  plan      String     @default("free") // "free", "pro", "premium"
+  stripeCustomerId String?
+  stripeSubscriptionId String?
+  
+  // Referral tracking
+  referralCode ReferralCode?
+  referredByCode String? // Code that referred this user
+  referrals    Referral[] @relation("Referrer")
+  
+  // Timestamps
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  
+  // Relations
+  newsletters Newsletter[]
+  
+  @@index([email])
+  @@index([plan])
+}
+
+model Newsletter {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Content
+  topics    String     // JSON stringified array
+  content   String     // JSON stringified sections
+  pdfUrl    String?    // S3 or similar
+  
+  // Tracking
+  generatedAt DateTime  @default(now())
+  sentAt      DateTime?
+  openedAt    DateTime?
+  
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  
+  @@index([userId, generatedAt])
+}
+
+model DeliveryLog {
+  id        String     @id @default(cuid())
+  userId    String
+  
+  // Status tracking
+  status    String     // "pending", "sent", "failed", "bounced"
+  errorMsg  String?
+  
+  // Timing
+  scheduledFor DateTime
+  deliveredAt DateTime?
+  
+  createdAt DateTime   @default(now())
+  
+  @@index([userId, scheduledFor])
+}
+
+model ReferralCode {
+  id        String     @id @default(cuid())
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Code generation
+  code      String     @unique @default(cuid())
+  
+  // Stats
+  views     Int        @default(0)
+  clicks    Int        @default(0)
+  signups   Int        @default(0)
+  conversions Int      @default(0) // Upgrades to paid plan
+  
+  // Reward tracking
+  rewardBalance Int    @default(0) // In months of free access
+  rewardsClaimed Int   @default(0)
+  
+  // Timestamps
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  
+  // Relations
+  referrals Referral[] @relation("Code")
+  
+  @@index([code])
+  @@index([userId])
+}
+
+model Referral {
+  id        String     @id @default(cuid())
+  
+  // Referrer (who shared the link)
+  referrerId String
+  referrer  User       @relation("Referrer", fields: [referrerId], references: [id], onDelete: Cascade)
+  
+  // Referral code used
+  referralCodeId String
+  referralCode ReferralCode @relation("Code", fields: [referralCodeId], references: [id], onDelete: Cascade)
+  
+  // Referee info (person who signed up)
+  refereeEmail String
+  refereeName  String?
+  
+  // Status
+  status    String     @default("signed_up") // "signed_up", "trial_expired", "converted", "churned"
+  convertedAt DateTime?
+  
+  // Reward (when they upgrade)
+  referrerReward Int    @default(0) // Months of free access earned
+  rewardClaimed Boolean @default(false)
+  
+  // Timestamps
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  
+  @@index([referrerId, status])
+  @@index([referralCodeId])
+}
+
+model UserEngagement {
+  id        String     @id @default(cuid())
+  userId    String
+  
+  // Topic interaction tracking
+  topic     String     // Topic name
+  action    String     // "view", "select", "save", "share", "open_email"
+  
+  // Context
+  source    String?    // "dashboard", "recommendation", "email"
+  metadata  String?    // JSON stringified additional data
+  
+  // Timestamps
+  createdAt DateTime   @default(now())
+  
+  @@index([userId, topic])
+  @@index([userId, action])
+  @@index([topic, action])
+}
+
+model EmailOpen {
+  id        String     @id @default(cuid())
+  userId    String
+  
+  // Timing data
+  sentAt    DateTime   // When email was sent
+  openedAt  DateTime   // When user opened email
+  
+  // Analysis
+  hourOfDay Int        // 0-23 (hour user opened)
+  dayOfWeek Int        // 0-6 (Monday-Sunday)
+  
+  // Context
+  emailType String?    // "daily_newsletter", "recommendation", etc
+  
+  createdAt DateTime   @default(now())
+  
+  @@index([userId, hourOfDay])
+  @@index([userId, openedAt])
+}
+
+model DeliveryOptimization {
+  id        String     @id @default(cuid())
+  userId    String     @unique
+  
+  // Current settings
+  currentTime String   // HH:MM format
+  timezone  String     @default("UTC")
+  
+  // AI optimization
+  suggestedTime String? // HH:MM format
+  suggestedReason String? // Why we suggest this time
+  confidence Int?      // 0-100 confidence
+  
+  // Engagement metrics
+  avgOpenRate Float    @default(0) // %
+  optimalHour Int?     // 0-23 (best hour to send)
+  peakDays  String     // JSON array of best days
+  
+  // Status
+  optimizationEnabled Boolean @default(true)
+  autoApply Boolean    @default(false)
+  appliedAt DateTime?
+  
+  // Timestamps
+  lastAnalyzedAt DateTime?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  
+  @@index([userId])
+}
