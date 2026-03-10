@@ -11,11 +11,14 @@ export async function POST(req: Request) {
       );
     }
 
+    // Return real Google Flights deep links (no fake prices)
     const deals = destinations.map((dest: string) => ({
       destination: dest,
       googleFlightsLink: `https://www.google.com/travel/flights?q=Flights+to+${encodeURIComponent(dest)}+from+${encodeURIComponent(homeAirport)}`,
-      airlineDirectLink: `https://www.expedia.com/Flights`,
-      estimatedPrice: `$${Math.floor(Math.random() * 400) + 150}`,
+      kayakLink: `https://www.kayak.com/flights/${homeAirport}-${dest}`,
+      skyscannerLink: `https://www.skyscanner.com/flights/${homeAirport}/${dest}`,
+      expediaLink: `https://www.expedia.com/Flights-Search?trip=roundtrip&leg1=from:${homeAirport},to:${dest}`,
+      note: 'Click links above to compare real-time prices across providers',
       departureDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     }));
 
@@ -38,7 +41,11 @@ export async function GET(req: Request) {
   }
 
   return NextResponse.json({
+    destination,
     googleFlightsLink: `https://www.google.com/travel/flights?q=Flights+to+${encodeURIComponent(destination)}+from+${encodeURIComponent(homeAirport)}`,
-    estimatedPrice: `$${Math.floor(Math.random() * 400) + 150}`,
+    kayakLink: `https://www.kayak.com/flights/${homeAirport}-${destination}`,
+    skyscannerLink: `https://www.skyscanner.com/flights/${homeAirport}/${destination}`,
+    expediaLink: `https://www.expedia.com/Flights-Search?trip=roundtrip&leg1=from:${homeAirport},to:${destination}`,
+    note: 'Search real-time prices on the links above',
   });
 }

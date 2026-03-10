@@ -20,6 +20,7 @@ const TOPICS = [
   { id: 'vacation', name: 'Vacation Planning', icon: '✈️', color: 'from-sky-400 to-blue-500' },
   { id: 'experiences', name: 'Experiences', icon: '🎪', color: 'from-fuchsia-400 to-pink-500' },
   { id: 'time-management', name: 'Time Management', icon: '⏰', color: 'from-red-400 to-pink-500' },
+  { id: 'movies', name: 'Movies & Entertainment', icon: '🎬', color: 'from-yellow-400 to-orange-400' },
   { id: 'deals', name: 'Deal Hunting', icon: '🎁', color: 'from-yellow-400 to-amber-500' },
 ];
 
