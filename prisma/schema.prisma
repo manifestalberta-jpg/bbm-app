@@ -11,12 +11,15 @@ model User {
   id                  String     @id @default(cuid())
   email               String     @unique
   name                String?
+  password            String?    // hashed password
+  emailVerified       DateTime?
   plan                String     @default("FREE")
   topics              String?    // JSON serialized
   homeAirport         String?
   destinations        String?    // JSON serialized
   dietType            String?
   preferences         String?    // JSON serialized
+  receiveDailyPDF     Boolean    @default(true)
   
   // Phase 1 adjustments
   city                String?

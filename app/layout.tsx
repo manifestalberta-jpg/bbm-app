@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import Navbar from '@/components/Navbar';
+import { AuthSessionProvider } from '@/components/SessionProvider';
 
 export const metadata: Metadata = {
   title: 'Big Brain Moves - Daily Newsletter & Planner',
@@ -23,10 +24,11 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body className="bg-dark-900 text-dark-50 antialiased">
-        <Navbar />
-        <main className="min-h-screen pt-16">{children}</main>
+        <AuthSessionProvider>
+          <Navbar />
+          <main className="min-h-screen pt-16">{children}</main>
+        </AuthSessionProvider>
       </body>
     </html>
   );
 }
-// Phase 1 Live
