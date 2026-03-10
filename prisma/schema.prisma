@@ -42,6 +42,9 @@ model User {
   engagements         UserEngagement[]
   recipes             Recipe[]
   referrals           Referral[] @relation("referrer")
+  emailOpens          EmailOpen[]
+  deliveryOptimizations DeliveryOptimization[]
+  analyticsEvents     AnalyticsEvent[]
 }
 
 model Referral {
@@ -54,6 +57,50 @@ model Referral {
   expiresAt           DateTime?
   
   referrer            User       @relation("referrer", fields: [referrerUserId], references: [id], onDelete: Cascade)
+}
+
+model UserEngagement {
+  id                  String     @id @default(cuid())
+  userId              String
+  topic               String
+  action              String     // viewed, clicked, shared, added_to_plan
+  timestamp           DateTime   @default(now())
+  duration            Int?       // seconds
+  
+  user                User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model EmailOpen {
+  id                  String     @id @default(cuid())
+  userId              String
+  newsletterId        String
+  openedAt            DateTime   @default(now())
+  deviceType          String?    // mobile, desktop, tablet
+  clientType          String?    // Gmail, Outlook, Apple Mail, etc.
+  
+  user                User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model DeliveryOptimization {
+  id                  String     @id @default(cuid())
+  userId              String
+  topic               String
+  bestDeliveryTime    String     // HH:MM format
+  openRate            Float      @default(0)
+  clickRate           Float      @default(0)
+  lastOptimized       DateTime   @default(now())
+  
+  user                User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AnalyticsEvent {
+  id                  String     @id @default(cuid())
+  userId              String
+  eventType           String     // page_view, api_call, checkout, referral_click, etc.
+  eventData           String?    // JSON
+  timestamp           DateTime   @default(now())
+  
+  user                User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Topic {
@@ -72,16 +119,6 @@ model Newsletter {
   content       String     @default("")
   pdfUrl        String?
   images        String?    // JSON serialized
-
-  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model UserEngagement {
-  id            String     @id @default(cuid())
-  userId        String
-  topic         String
-  action        String
-  timestamp     DateTime   @default(now())
 
   user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
