@@ -35,6 +35,9 @@ export default function Navbar() {
             <Link href="/trip-builder" className="text-dark-300 hover:text-green-400 transition-colors">
               Build Trip
             </Link>
+            <Link href="/pricing" className="text-dark-300 hover:text-green-400 transition-colors font-semibold">
+              Pricing
+            </Link>
             <Link href="/preferences" className="text-dark-300 hover:text-green-400 transition-colors">
               Profile
             </Link>
