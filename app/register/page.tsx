@@ -168,3 +168,5 @@ export default function RegisterPage() {
     </div>
   );
 }
+
+// VALIDATION_MARKER_20260310_CLEAN_COMPLETE
