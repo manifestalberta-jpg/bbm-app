@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id                  String     @id @default(cuid())
+  email               String     @unique
+  name                String?
+  plan                String     @default("FREE")
+  topics              String?    // JSON serialized
+  homeAirport         String?
+  destinations        String?    // JSON serialized
+  dietType            String?
+  preferences         String?    // JSON serialized
+  
+  // New Phase 1 adjustments
+  city                String?
+  favoriteArtists     String?    // JSON serialized (CSV or JSON array)
+  favoriteMovies      String?    // JSON serialized (CSV or JSON array)
+  experienceSummary   String?    // Paste resume text or summary
+  interests           String?    // JSON serialized (CSV or JSON array)
+  desiredCareer       String?
+  
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+
+  newsletters         Newsletter[]
+  dailyPlans          DailyPlan[]
+  tripPlans           TripPlan[]
+  engagements         UserEngagement[]
+  recipes             Recipe[]
+}
+
+model Topic {
+  id            String     @id @default(cuid())
+  name          String     @unique
+  aiSuggested   Boolean    @default(false)
+  approved      Boolean    @default(false)
+  createdAt     DateTime   @default(now())
+}
+
+model Newsletter {
+  id            String     @id @default(cuid())
+  userId        String
+  topics        String?    // JSON serialized (CSV or JSON)
+  date          DateTime   @default(now())
+  content       String     @default("")
+  pdfUrl        String?
+  images        String?    // JSON serialized
+
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserEngagement {
+  id            String     @id @default(cuid())
+  userId        String
+  topic         String
+  action        String
+  timestamp     DateTime   @default(now())
+
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model DailyPlan {
+  id            String     @id @default(cuid())
+  userId        String
+  date          DateTime
+  items         String     // JSON serialized
+  editHistory   String?    // JSON serialized
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model TripPlan {
+  id            String     @id @default(cuid())
+  userId        String
+  destinations  String     // JSON serialized (comma-separated or JSON)
+  startDate     DateTime
+  endDate       DateTime
+  itinerary     String     // JSON serialized
+  deals         String?    // JSON serialized
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Recipe {
+  id            String     @id @default(cuid())
+  userId        String?
+  dietType      String     // e.g., KETO, MEDITERRANEAN, etc.
+  title         String
+  ingredients   String     // JSON serialized or CSV
+  instructions  String     // JSON serialized or CSV
+  calorieCount  Int?
+  imageUrl      String?
+  createdAt     DateTime   @default(now())
+
+  user          User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+}

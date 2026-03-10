@@ -1,0 +1,50 @@
+{
+  "name": "Big Brain Moves - Daily Newsletter & Planner",
+  "short_name": "Big Brain Moves",
+  "description": "Personalized daily newsletters, editable planner, and travel deals all in one",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0a0a0a",
+  "theme_color": "#22c55e",
+  "dir": "ltr",
+  "lang": "en-US",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%2322c55e' width='192' height='192'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='100' font-weight='bold' fill='white' font-family='Arial'>BBM</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect fill='%2322c55e' width='512' height='512'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='300' font-weight='bold' fill='white' font-family='Arial'>BBM</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'><rect fill='%230a0a0a' width='540' height='720'/><text x='50%' y='100' text-anchor='middle' font-size='40' fill='%2322c55e' font-family='Arial' font-weight='bold'>Big Brain Moves</text></svg>",
+      "sizes": "540x720",
+      "type": "image/svg+xml",
+      "form_factor": "narrow"
+    }
+  ],
+  "categories": ["productivity", "lifestyle"],
+  "shortcuts": [
+    {
+      "name": "Daily Planner",
+      "short_name": "Planner",
+      "description": "Open the daily planner",
+      "url": "/planner?utm_source=shortcut",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><rect fill='%2322c55e' width='96' height='96'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='50' fill='white' font-family='Arial'>📅</text></svg>",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}
